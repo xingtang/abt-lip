@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	
+	<!-- 加载配置文件 
+	<context:property-placeholder location="classpath:properties/*.properties"/>-->
+	
+	<bean class="com.ccb.utils.EncryptPropertyPlaceholderConfigurer" p:locations="classpath:properties/*.properties"/>
+	
+	<!-- 数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="filters" value="${filters}" />		
+		<property name="maxActive" value="${maxActive}" />		
+		<property name="initialSize" value="${initialSize}" />		
+		<property name="maxWait" value="${maxWait}" />
+		<property name="minIdle" value="${minIdle}" />		
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}" />
+		<property name="validationQuery" value="${validationQuery}" />
+		<property name="testWhileIdle" value="${testWhileIdle}" />
+		<property name="testOnBorrow" value="${testOnBorrow}" />
+		<property name="testOnReturn" value="${testOnReturn}" />
+		<property name="poolPreparedStatements" value="${poolPreparedStatements}" />
+		<property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements}" />
+	</bean>
+	
+	<!-- 让spring管理sqlsessionfactory 使用mybatis和spring整合包中的 -->
+	<!-- 配置SqlsessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载mybatis的配置文件 -->
+		<property name="configLocation" value="classpath:mybatis/SqlMapConfig.xml"/>
+		<!-- 配置数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!-- 配置包扫描器，扫描mapper接口生成代理对象放到spring容器中 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 指定要扫描的包 -->
+		<property name="basePackage" value="com.aib.mapper"/>
+	</bean>
+	
+	<!-- 配置包扫描器，扫描@Service主键的类 -->
+	<context:component-scan base-package="com.aib.service"/>
+	<context:component-scan base-package="com.slip.constant"/>	
+	<!-- 事务配置 -->
+	
+	<!-- 事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 事务注解驱动，标注@Transactional的类和方法将具有事务性 
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/> -->
+	
+	<!-- 切面 -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice"
+			pointcut="execution(* com.aib.service..*(..))" />
+	</aop:config>
+	
+	<!-- 通知 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 传播行为 -->
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="imp*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="upd*" propagation="REQUIRED" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="select*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="qry*" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 国际化配置 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>properties/messages</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="utf-8" />
+	</bean>
+	
+</beans>	

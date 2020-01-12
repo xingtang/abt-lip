@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+		PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 是否启用下划线与驼峰式命名规则的映射 -->
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<!-- 设置二级缓存 -->
+		<setting name="cacheEnabled" value="true" />
+		<!-- 打印查询语句 -->
+		<!-- <setting name="logImpl" value="SLF4J" /> -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+		<!-- -->
+		<setting name="defaultExecutorType" value="REUSE" />
+		<!-- 指定当结果集中值为 null 的时候是否调用映射对象的 setter（map 对象时为 put）方法 -->
+		<setting name="callSettersOnNulls" value="true" />
+		<!-- 延迟加载 -->
+	</settings>
+
+	<typeAliases>
+		<package name="com.aib.pojo" />
+	</typeAliases>
+
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<!--分页参数合理化 -->
+			<property name="reasonable" value="true" />
+		</plugin>
+	</plugins>
+</configuration>
