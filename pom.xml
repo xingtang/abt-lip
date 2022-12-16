@@ -27,7 +27,7 @@
 		<joda-time.version>2.5</joda-time.version>
 		<oracle.version>10.1.0.2.0</oracle.version>
 		<pagehelper.version>5.0.3</pagehelper.version>
-		<springmvc.version>5.1.0.RELEASE</springmvc.version>
+		<springmvc.version>5.2.20.RELEASE</springmvc.version>
 		<slf4j-api.version>1.7.25</slf4j-api.version>
 		<log4j.version>1.2.14</log4j.version>
 		<servlet-api.version>2.5</servlet-api.version>
